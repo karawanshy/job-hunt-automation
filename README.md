@@ -105,7 +105,7 @@ every value. Keep the indentation; it's YAML. Sections:
 |---|---|
 | `profile` | Your details. Used for application answers. `current_employer` is always excluded |
 | `search` | Roles (in priority order), title words to avoid, years filter, allowed and excluded cities, daily cap |
-| `schedule` | Daily scan time (default 08:00) and how often to check Slack replies (default every 2 h, 09:00–21:00) |
+| `schedule` | Daily scan time (default 08:00) and how often to check Slack replies (default every hour, 09:00–21:00; 1 h is the cloud minimum) |
 | `exclusions` | Companies to never show, rules (e.g. "no defense companies"), phrases that drop a post, companies to ask about first |
 | `referrals` | Your own grouping of connections, who to ask first, and which language to write to each group |
 | `slack` | Channel ID (§3.5) |
@@ -194,24 +194,68 @@ Reply **inside the job's thread**:
 - **CV tailoring** only edits a copy in `Tailored CVs/`. Your master CV is never touched.
 
 ## 6. Scheduling
-- **Cloud** (computer can be off): in Claude Code run `/schedule` and create two routines on your copy of this repo:
-  - daily at `schedule.daily_scan` (default **08:00**): *"Run A from CLAUDE.md"*
-  - every `schedule.reply_check_every_hours` hours within `schedule.reply_check_window` (default **every 2 h, 09:00–21:00**): *"Run B from CLAUDE.md"*
+Two jobs run on a schedule:
 
-  Give the routines the Google Drive / Docs / Sheets and Slack connectors, and set two secrets / environment variables:
-  `JOB_HUNT_CONFIG_DOC_ID` (your config doc ID) and `SLACK_WEBHOOK_URL` (the bot webhook).
-- **Local** (computer on, Claude app open; a missed run happens when the app next opens): ask Claude Code to
-  *"create scheduled tasks for Run A and Run B using my schedule"*.
+| Job | Default | What it does |
+|---|---|---|
+| **Run A**, daily scan | every day at **08:00** (`schedule.daily_scan`) | finds new jobs and posts them to Slack |
+| **Run B**, reply check | **every hour, 09:00–21:00** (`schedule.reply_check_every_hours`, `schedule.reply_check_window`) | acts on your Slack replies; exits right away when there's nothing new |
 
-The setup (Run 0) proposes 08:00 for the scan and every 2 hours for replies. Change them any time in the config doc's
-`schedule` section, then ask Claude to update the schedules.
+Choose where they run:
+
+| | Cloud routines (recommended) | Local scheduled tasks |
+|---|---|---|
+| Computer | can be **off / closed** | must be on with the Claude app open (missed runs fire when it reopens) |
+| Fastest reply check | **every 1 hour (minimum)** | every 30 min or less |
+| Secrets | stored in a cloud environment (§6.1) | read from your Mac (`job-hunt.local.yaml`, `~/.config/job-hunt/`) |
+| LinkedIn | may occasionally block cloud servers | works from your home network |
+
+### 6.1 Cloud: create an environment with your two variables
+Cloud runs can't see files on your computer, so the two values your Mac keeps locally go into a cloud
+**environment** instead. Do this once (menu names can shift slightly as the product changes):
+1. Open <https://claude.ai/code>.
+2. Open the **environment selector** (next to the repository picker) → **Add environment**. If you already have
+   environments, create a new one just for this, so its variables stay separate.
+3. **Name:** `job-hunt`.
+4. **Network access:** the default "trusted" list doesn't include LinkedIn or Slack webhooks. Choose **Custom** and
+   allow `www.linkedin.com`, `linkedin.com` and `hooks.slack.com`, or choose **Full**.
+5. **Environment variables** (one per line, `.env` format):
+   ```
+   JOB_HUNT_CONFIG_DOC_ID=<your config doc ID>
+   SLACK_WEBHOOK_URL=<your bot webhook URL>
+   ```
+   Paste the webhook into this field yourself. Don't send it in a chat.
+6. **Save.**
+7. Make sure the Google Drive, Google Docs, Google Sheets and Slack connectors are connected at
+   <https://claude.ai/customize/connectors>. Cloud routines use your claude.ai connectors.
+
+### 6.2 Cloud: create the routines
+In Claude Code, run `/schedule` and ask:
+> Create two routines on my copy of this repo in the `job-hunt` environment, model Sonnet:
+> "Run A from CLAUDE.md" daily at <your scan time>, and "Run B from CLAUDE.md" every hour from 09:00 to 21:00 (my time).
+
+Claude converts your local times to UTC (routines use UTC cron). Check the first runs at <https://claude.ai/code/routines>.
+If Run A keeps finding nothing, LinkedIn is probably blocking the cloud: move Run A to a local task and keep Run B
+in the cloud.
+
+### 6.3 Local scheduled tasks
+Ask Claude Code: *"Create local scheduled tasks for Run A and Run B using my schedule."* They read
+`job-hunt.local.yaml` and `~/.config/job-hunt/slack_webhook` directly.
+
+Change times any time in the config doc's `schedule` section, then ask Claude to update the schedules.
+
+### 6.4 Cost
+Runs count against your Claude plan's usage (or your API bill). Idle reply checks are small: they read the recent
+channel messages and the config doc, then stop. Runs that act on a reply (CV tailoring, application kit) cost more, so
+CLAUDE.md's "Token budget" keeps them lean. Running the routines on Sonnet instead of a larger model also reduces cost.
 
 ## 7. Troubleshooting
 | Problem | Fix |
 |---|---|
 | No Slack notifications | Messages must come from **Job Hunt Bot**, not your account. Check the webhook (§3.5) and channel notifications |
 | `No Slack webhook configured` | Save the URL (§3.5 step 4), or set `SLACK_WEBHOOK_URL` in cloud runs |
-| Cloud scan finds nothing | LinkedIn sometimes blocks cloud servers. Schedule locally instead |
+| Cloud scan finds nothing | LinkedIn sometimes blocks cloud servers, or the environment's network access doesn't allow `linkedin.com` (§6.1). Move Run A to a local task |
+| Cloud run can't post to Slack | Allow `hooks.slack.com` in the environment's network access and check `SLACK_WEBHOOK_URL` (§6.1) |
 | Sheet write rejected | A value isn't in your dropdown. Make `tracker.dropdowns` match the sheet exactly |
 | Config error | The config doc must be valid YAML. Check the indentation and quote values containing `:` or `#` |
 | The paste-the-URL command did nothing | It has to run in a real terminal app, not inside a chat |
