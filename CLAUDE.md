@@ -46,8 +46,16 @@ create yourself. Go step by step, and confirm each step before moving on.
    - `Referral Request Template` (Google Doc in `Config`): ask for the user's own message per language, or start from
      `examples/templates.example.md` and let them edit it;
    - tracker: if the user already has a sheet, ask for its link and which columns are theirs; otherwise create
-     `Job Hunt - Tracker` (Google Sheet) with the `tracker.columns` headers in row 1, `my_columns: "A:Q"`,
-     `key_column: B`, and, if the Sheets tools allow it, data-validation dropdowns for Work Model / Status / Referral.
+     `Job Hunt - Tracker` (Google Sheet), `my_columns: "A:Q"`, `key_column: B`, then set it up fully (Sheets
+     `update_values` + `update_spreadsheet` batchUpdate):
+     - row 1 = the `tracker.columns` headers, with cell A1 = the user's first name (+ an emoji if they like) instead
+       of `owner_marker`, so a shared sheet shows whose columns these are;
+     - header row: bold, colored background (default cyan `#00FFFF`), frozen (`frozenRowCount: 1`);
+     - strict dropdowns (`ONE_OF_LIST`, `strict: true`) on rows 2–1000 of Work Model, Status and Referral, with
+       exactly the values in `tracker.dropdowns`; Date Applied / Last Update / Date Found / Follow-up Due as dates in
+       `tracker.date_format`.
+     Read row 1 back and confirm the dropdowns exist before moving on. If a batchUpdate is refused, tell the user
+     which part to add by hand (Data → Data validation).
 4. **CV.** Ask the user to upload their CV to `Job Hunt`. If it's a PDF or .docx, ask them to open it and use
    File → Save as Google Docs (one click; the Drive tools can't convert reliably), then use that Google Doc as
    `cv_master_doc`. Read it and confirm the text matches their real CV.
