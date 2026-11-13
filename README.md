@@ -29,6 +29,7 @@ Drive. The repo only stores the ID of one config doc, in a git-ignored file.
 6. [Scheduling](#6-scheduling)
 7. [Troubleshooting](#7-troubleshooting)
 8. [Privacy](#8-privacy)
+9. [Disclaimer and license](#9-disclaimer-and-license)
 
 ---
 
@@ -249,6 +250,37 @@ Runs count against your Claude plan's usage (or your API bill). Idle reply check
 channel messages and the config doc, then stop. Runs that act on a reply (CV tailoring, application kit) cost more, so
 CLAUDE.md's "Token budget" keeps them lean. Running the routines on Sonnet instead of a larger model also reduces cost.
 
+Rough estimates with the defaults (daily scan, hourly reply check 09:00–21:00, a couple of replies a day), on Sonnet.
+Anthropic doesn't publish the exact plan limits, so treat these as ballpark figures and check your real numbers at
+<https://claude.ai/settings/usage> after a few days:
+
+| Plan | Any 5-hour window | Normal week | Busy week (many `apply`, CV tailoring) |
+|---|---|---|---|
+| Pro | ~5–15% | ~10–25% | ~25–40% |
+| Max 5x | ~1–3% | ~2–5% | ~5–8% |
+| Max 20x | ~0.3–0.8% | ~0.5–1.5% | ~1.5–2% |
+| API billing | | ≈ $1.50–2.80 a day, ≈ $45–85 a month | |
+
+Where the usage goes:
+
+| Run | ≈ API cost per run |
+|---|---|
+| Idle reply check (no new replies) | $0.05–0.10 |
+| Reply check that sends a kit (no tailoring) | $0.20–0.40 |
+| CV tailoring | +$0.20–0.40 per job |
+| Daily scan | $0.40–0.90 |
+
+To use less: check replies less often (every 2 h halves the idle cost; `schedule.reply_check_every_hours: 2`), shorten
+the window, or scan weekly (raise `search.daily_cap`, since it counts per scan). On **Pro**, a lighter schedule leaves
+more room for your own Claude use. Idle checks are the part that grows with the schedule:
+
+| Reply checks | Per day | Idle cost per month |
+|---|---|---|
+| Hourly, 09–21 (default) | 13 | ~$27 |
+| Every 2 h, 09–21 | 7 | ~$15 |
+| Hourly, 09–18 | 10 | ~$21 |
+| Twice a day | 2 | ~$4 |
+
 ## 7. Troubleshooting
 | Problem | Fix |
 |---|---|
@@ -266,10 +298,21 @@ CLAUDE.md's "Token budget" keeps them lean. Running the routines on Sonnet inste
   secret.
 - Forking? Run `git status` before committing, and never add `job-hunt.local.yaml`.
 
+## 9. Disclaimer and license
+- **LinkedIn:** the scan reads LinkedIn's public job pages (the logged-out "guest" pages), a few dozen requests a
+  day. It never logs in, sends messages or applies. Automated access to LinkedIn may still go against
+  [LinkedIn's User Agreement](https://www.linkedin.com/legal/user-agreement), and LinkedIn can block it or change
+  those pages at any time, which would stop the scan without warning. Use it at your own risk and keep the volume low.
+- **Not affiliated** with LinkedIn, Slack, Google or Anthropic.
+- **Check what it writes.** Job scores, CV edits and message drafts are AI-generated. Read them before you send or
+  submit anything; you are responsible for what goes out under your name.
+- **License:** [MIT](LICENSE).
+
 ## Repo layout
 ```
 CLAUDE.md                     agent instructions: Run 0 setup, Run A scan, Run B replies, tailoring, referrals
 scripts/slack_post.sh         posts as the Slack bot (top-level or in a thread)
 examples/                     config, template and pipeline-sheet examples
 job-hunt.local.example.yaml   copy to job-hunt.local.yaml (git-ignored) with your config doc ID
+LICENSE                       MIT
 ```
