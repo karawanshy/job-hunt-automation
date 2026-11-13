@@ -48,9 +48,7 @@ create yourself. Go step by step, and confirm each step before moving on.
    - tracker: if the user already has a sheet, ask for its link and which columns are theirs; otherwise create
      `Job Hunt - Tracker` (Google Sheet), `my_columns: "A:Q"`, `key_column: B`, then set it up fully (Sheets
      `update_values` + `update_spreadsheet` batchUpdate):
-     - row 1 = the `tracker.columns` headers, with cell A1 = the user's first name (+ an emoji if they like) instead
-       of `owner_marker`, so a shared sheet shows whose columns these are;
-     - header row: bold, colored background (default cyan `#00FFFF`), frozen (`frozenRowCount: 1`);
+     - row 1 = the `tracker.columns` headers;
      - strict dropdowns (`ONE_OF_LIST`, `strict: true`) on rows 2–1000 of Work Model, Status and Referral, with
        exactly the values in `tracker.dropdowns`; Date Applied / Last Update / Date Found / Follow-up Due as dates in
        `tracker.date_format`.

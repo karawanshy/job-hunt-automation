@@ -81,7 +81,7 @@ tracker:                                # your application tracker (only applied
   tab: Sheet1
   my_columns: "A:Q"                     # never written outside these columns (handy for shared sheets)
   key_column: B                         # first empty cell here = next free row
-  columns: [<your first name>, Company, Role Title, Location, Work Model, Salary Range, Date Applied, Status, Referral, Contact, Last Update, Notes, Link, Date Found, Applicants, Match, Follow-up Due]
+  columns: [owner_marker, Company, Role Title, Location, Work Model, Salary Range, Date Applied, Status, Referral, Contact, Last Update, Notes, Link, Date Found, Applicants, Match, Follow-up Due]
   dropdowns:                            # exact values allowed by your sheet's data validation
     Work Model: [Hybrid, On-Site, Remote]
     Status: [Applied, OA, Recruiter Screen, Technical Interview, Manager Interview, Final Round, Offer, Rejected, Ghosted]
