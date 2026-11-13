@@ -89,7 +89,8 @@ create yourself. Go step by step, and confirm each step before moving on.
 2. Dedupe against the pipeline sheet (job_id / link) and the tracker sheet.
 3. Score match 1–10 against the master CV. Sort by role priority, then score. Cap at `search.daily_cap`.
 4. Referral match (see "Referrals").
-5. Append one row per job to the pipeline sheet: stage `found`, full posting text in `post_text`.
+5. Append one row per job to the pipeline sheet: stage `found`, and the **complete** posting text in `post_text`
+   (verbatim, not a summary or excerpt: it is what gets archived on `applied`; trim only past the 50,000-char cell limit).
    Do **not** touch the tracker sheet or the archive doc here.
 6. Post one Slack message per job with `scripts/slack_post.sh` (format below), plus a short summary message
    (how many checked, what the rules dropped and why).
