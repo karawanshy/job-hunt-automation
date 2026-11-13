@@ -100,6 +100,12 @@ The webhook returns no message ts. In Run B, read #job-hunt with the Slack conne
 LinkedIn link, and store the ts in the pipeline sheet's `slack_ts`.
 
 ## Run B: Slack reply check (a few times a day)
+**Cheap exit first** (this run is frequent, so keep idle runs tiny): before reading anything else, read only the
+Slack channel's recent activity (messages and thread replies newer than the last check, i.e. now minus the check
+interval plus a few minutes). If there is no new message from the user and it isn't the first run of the day (when
+follow-ups are checked), stop immediately and post nothing. In that case read nothing beyond the config doc (needed
+for the channel ID): no CV, templates or sheets.
+
 Read thread replies in `slack.channel_id` with the Slack connector; answer through the bot in the same thread.
 - `apply` → application kit: CV tailoring (below), cover letter if asked, drafts for likely screening questions,
   standard answers from `profile`, apply link, warnings (account needed, US hours, …). Stage `apply_kit_sent`.
