@@ -10,9 +10,13 @@ user's Google Drive and is reached through one pointer:
 All IDs below come from it. Load other files **only when the step needs them** (see "Token budget").
 
 **Connectors can be slow to start** (scheduled cloud runs especially). If a Drive / Docs / Sheets / Slack tool isn't
-found yet, or a call fails with a timeout or server error, wait (`sleep 20`) and try again, for up to ~3 minutes in
-total. Only then give up: post one short bot message saying which connector failed, and stop. Missed replies are
-picked up by the next run (see Run B's look-back window).
+found yet ("still connecting"), or a call fails with a timeout or server error, wait and try again, for up to ~3
+minutes in total. A plain foreground `sleep` is blocked in cloud runs: wait with a background `sleep 30`
+(`run_in_background: true`) and retry once it finishes. If ToolSearch reports a connector as **failed** (not "still
+connecting"), it won't come back in this run: stop retrying. Then give up: post one short bot message starting with
+the exact marker for the run, `⚠️ Daily scan did not run` (Run A) or `⚠️ Reply check did not run` (Run B), plus which
+connector failed, and stop. Nothing is lost: Run B's look-back window catches missed replies, and Run B re-runs a
+failed daily scan (see Run B).
 
 ## Token budget (runs are frequent, so keep them lean)
 - **Load lazily.** Master CV: only for scoring (Run A) or tailoring/kit (`apply`). Templates: only when drafting a
@@ -133,7 +137,8 @@ create yourself. Go step by step, and confirm each step before moving on.
    (verbatim, not a summary or excerpt: it is what gets archived on `applied`; trim only past the 50,000-char cell limit).
    Do **not** touch the tracker sheet or the archive doc here.
 6. Post one Slack message per job with `scripts/slack_post.sh` (format below), plus a short summary message
-   (how many checked, what the rules dropped and why).
+   starting with `*Daily scan summary:*` (how many checked, what the rules dropped and why). Post it even when no job
+   passed, so Run B knows the scan ran.
 
 ## How to search (works without login)
 - LinkedIn guest search: `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=<q>&location=<country>&f_TPR=r604800&start=0`
@@ -162,8 +167,10 @@ LinkedIn link, and store the ts in the pipeline sheet's `slack_ts`.
 **Cheap exit first** (this run is frequent, so keep idle runs tiny): before reading anything else, read only the
 Slack channel's recent activity: messages and thread replies from the last **3× the check interval (at least 3 h)**.
 The wide window means a failed, late or skipped run never loses a reply. A user reply is **new** only if the bot
-hasn't posted in that thread after it, so nothing is handled twice. If there is no new user reply and it isn't the
-first run of the day (when follow-ups are checked), stop immediately and post nothing. In that case read nothing beyond the config doc (needed
+hasn't posted in that thread after it, so nothing is handled twice. **Failed scan catch-up:** if the window holds a
+bot message starting `⚠️ Daily scan did not run` with no later `Daily scan summary`, do Run A after handling the
+replies. If there is no new user reply, no failed scan to catch up, and it isn't the first run of the day (when
+follow-ups are checked), stop immediately and post nothing. In that case read nothing beyond the config doc (needed
 for the channel ID): no CV, templates or sheets.
 
 Read thread replies in `slack.channel_id` with the Slack connector; answer through the bot in the same thread.
