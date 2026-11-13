@@ -45,6 +45,8 @@ create yourself. Go step by step, and confirm each step before moving on.
    preference; target roles in priority order; roles to avoid; max years required; home city and allowed cities;
    companies / industries to exclude and phrases that rule a post out; whether they'll use referrals and how they want
    connections grouped (`referrals.tags`, `prefer_tags`, `language_by_tag`).
+   **If they want referrals, have them request the LinkedIn export right now** (steps in step 8): it can take up to
+   ~24 h to arrive, so starting early means it's ready by the test run. Continue with step 3 while they wait.
 3. **Create the Drive structure** (Drive `create_file`):
    - folder `Job Hunt`, with subfolders `Config` and `Tailored CVs`;
    - `Job Hunt - Pipeline` (Google Sheet). Write row 1 from `examples/pipeline_columns.md`;
@@ -77,7 +79,21 @@ create yourself. Go step by step, and confirm each step before moving on.
    it in `slack.channel_id`. Then walk them through the bot webhook exactly as in README §3.5 (they must save the URL
    themselves in their own terminal; never ask them to paste it in chat). Test with `scripts/slack_post.sh "test"` and
    ask whether their phone got a notification.
-8. **Referrals (optional).** Explain the LinkedIn export (README §3.6); it arrives by email within ~24 h.
+8. **Referrals.** Always ask about this step; never skip it silently. If the user doesn't want referrals, set
+   `referrals.enabled: false` and move on. Otherwise walk them through the LinkedIn export (same as README §3.6),
+   one step at a time:
+   1. On linkedin.com (desktop is easiest): **Me** (profile photo) → **Settings & Privacy** → **Data privacy** →
+      **Get a copy of your data**.
+   2. Choose **Download larger data archive** (Connections isn't among the smaller checkboxes) → **Request archive**.
+      If LinkedIn asks for the password, the user types it themselves.
+   3. LinkedIn emails a download link, usually within minutes to ~24 h. Download the .zip, unzip it, and find
+      `Connections.csv`.
+   4. Upload **only** `Connections.csv` to `Job Hunt/Config` (**New → File upload**). Nothing else from the archive.
+   5. Tell Claude it's there.
+   If it hasn't arrived yet, finish the other steps: jobs show "Referral: none found" until it's in. When the CSV is
+   in the folder, build the `Connections` sheet right away as described in "Referrals" below, save its ID in
+   `google.connections_sheet`, show the user how many connections got each tag, and ask them to fix wrong tags in the
+   sheet once.
 9. **Test run:** Run A capped at 3 jobs, then ask the user to reply `apply` on one, then Run B.
 10. **Schedule**, only after the user is happy with the test. Propose defaults and let the user change them:
     - daily scan (Run A): **08:00** every day, in their timezone;
@@ -171,9 +187,18 @@ Decide if tweaks are worth it (skip when the master already fits). If yes:
 Never modify the master CV or any PDF.
 
 ## Referrals
-Needs the LinkedIn export (`Connections.csv`, from Settings → Data privacy → Get a copy of your data → larger archive)
-uploaded to `google.config_folder`. On first use, convert it to a Google Sheet `Connections` with an extra `tag` column using the tags in
-`referrals.tags` (guessed from names; guesses are often wrong), and ask the user in Slack to review the tags once.
+Skip all of this when `referrals.enabled` is false. Needs the LinkedIn export (`Connections.csv`, steps in Run 0
+step 8) uploaded to `google.config_folder`.
+**Building the sheet** (once, when `google.connections_sheet` is empty and `Connections.csv` exists in the folder):
+read the CSV (`download_file_content`); it starts with a few `Notes:` lines before the real header
+`First Name, Last Name, URL, Email Address, Company, Position, Connected On`, so skip those. Create a Google Sheet
+`Connections` in `google.config_folder` with those columns plus `tag`, guess each `tag` from `referrals.tags` (from
+names; guesses are often wrong), write the rows, and store the sheet ID in `google.connections_sheet` in the config
+doc. When rebuilding after a fresh export, copy the old sheet's tags across by `URL` first and only guess for new
+people. Then ask the user once (in setup, or in Slack during a run) to review the tags. Rows without a company can't be
+matched; leave them. If `Connections.csv` is still missing during Run A, write "none found" and remind the user in
+the summary message at most once a week.
+**Matching:**
 Match by company (fuzzy). Pick by `referrals.prefer_tags` order, then same function (engineering > recruiting), then
 seniority. Only 1st-degree connections can be messaged. Message language comes from `referrals.language_by_tag`, using
 the templates in the user's voice; fill only the name plus at most one line naming the role and link.

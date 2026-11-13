@@ -68,7 +68,8 @@ when you reach them):
 - add your CV to the `Job Hunt` folder as a Google Doc: upload it, double-click it, **Open with → Google Docs**,
   then (for a .docx) **File → Save as Google Docs**;
 - create the Slack bot and save its webhook URL in your own terminal (§3.5);
-- request the LinkedIn export (§3.6).
+- *(for referral suggestions)* request your LinkedIn connections export and upload `Connections.csv` to
+  `Job Hunt/Config` (§3.6). **Request it at the start**: it can take up to a day to arrive.
 
 ## 3. Manual setup, step by step
 Use this if you prefer to do it yourself, or to understand what the quick start creates.
@@ -165,12 +166,28 @@ a tiny bot instead.
 
 The webhook URL is a secret. Never commit it or paste it into a chat or an issue.
 
-### 3.6 Referrals (optional)
-1. LinkedIn → **Settings → Data privacy → Get a copy of your data** → choose **"Download larger data archive"**
-   (Connections isn't among the smaller checkboxes) → **Request archive**.
-2. When the email arrives (up to ~24 h), unzip it and upload `Connections.csv` to `Job Hunt/Config/`.
-3. On the next run the agent builds a `Connections` sheet with a `tag` column using your `referrals.tags`, guesses tags
-   from names, and asks you in Slack to check them once. Name-based guesses are often wrong, so do check.
+### 3.6 Referrals (optional, but request the export early)
+For each job, the agent checks whether one of your 1st-degree LinkedIn connections works there and drafts a referral
+request. LinkedIn has no API for this, so it uses your exported connections list. **Start this first**: the export can
+take up to a day.
+1. On linkedin.com (desktop is easiest): **Me** (your profile photo) → **Settings & Privacy** → **Data privacy** →
+   **Get a copy of your data**.
+2. Choose **Download larger data archive** (Connections isn't among the smaller checkboxes) → **Request archive**.
+   Enter your LinkedIn password if asked.
+3. LinkedIn emails you a download link, usually within minutes to ~24 h. Download the .zip, unzip it, and find
+   **`Connections.csv`**.
+4. Upload **only** `Connections.csv` to `Job Hunt/Config/` (**New → File upload**). The rest of the archive stays on
+   your computer.
+5. Tell Claude it's there (or just wait for the next scan). The agent turns it into a `Connections` sheet with a `tag`
+   column using your `referrals.tags`, guesses the tags from names, and asks you to check them once. Name-based guesses
+   are often wrong, so do check and fix them in the sheet.
+
+Until the file is in, job messages say *"Referral: none found"*, and everything else works normally. Don't want
+referrals? Set `referrals.enabled: false` in your config doc.
+
+Your connections list changes over time. To refresh it, export again, upload the new `Connections.csv` over the old one
+(or delete the old one first), clear `google.connections_sheet` in the config doc, and the agent rebuilds the sheet.
+Tags you already fixed are kept for people who were in the old sheet.
 
 ### 3.7 First run
 In Claude Code:

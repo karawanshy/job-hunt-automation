@@ -57,6 +57,7 @@ exclusions:
   posting_text_filters: ["security clearance"]   # drop any post containing these
 
 referrals:
+  enabled: true                         # false = never look for referrals
   tags: [colleague, other]              # your own grouping of connections
   prefer_tags: [colleague, other]       # who to ask first when several work there
   language_by_tag: {colleague: English, other: English}
@@ -74,6 +75,7 @@ google:
   cv_master_doc: <master CV Google Doc ID>     # never edited
   cv_extra_material_doc: <doc ID>               # optional true lines for tailoring
   tailored_cv_folder: <"Tailored CVs" folder ID>
+  connections_sheet: ""                         # filled in once Connections.csv is converted (see Referrals)
   tailored_cv_naming: "Jane Doe - CV - <Company> - <Title>"
 
 tracker:                                # your application tracker (only applied jobs)
