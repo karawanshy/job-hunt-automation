@@ -45,7 +45,11 @@ create yourself. Go step by step, and confirm each step before moving on.
    ask whether their phone got a notification.
 8. **Referrals (optional).** Explain the LinkedIn export (README §5); it arrives by email within ~24 h.
 9. **Test run:** Run A capped at 3 jobs, then ask the user to reply `apply` on one, then Run B.
-10. **Schedule** (README §7), only after the user is happy with the test.
+10. **Schedule**, only after the user is happy with the test. Propose defaults and let the user change them:
+    - daily scan (Run A): **08:00** every day, in their timezone;
+    - Slack reply check (Run B): **every 2 hours between 09:00 and 21:00**.
+    Ask "Run the daily scan at 08:00 and check your Slack replies every 2 hours (09:00–21:00), or other times?",
+    save the answer in the config doc's `schedule` section, then create the schedules (README §6).
 
 ## Where things live (all in the user's Drive)
 | What | Where |

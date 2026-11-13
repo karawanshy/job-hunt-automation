@@ -105,6 +105,7 @@ every value. Keep the indentation; it's YAML. Sections:
 |---|---|
 | `profile` | Your details. Used for application answers. `current_employer` is always excluded |
 | `search` | Roles (in priority order), title words to avoid, years filter, allowed and excluded cities, daily cap |
+| `schedule` | Daily scan time (default 08:00) and how often to check Slack replies (default every 2 h, 09:00–21:00) |
 | `exclusions` | Companies to never show, rules (e.g. "no defense companies"), phrases that drop a post, companies to ask about first |
 | `referrals` | Your own grouping of connections, who to ask first, and which language to write to each group |
 | `slack` | Channel ID (§3.5) |
@@ -194,12 +195,16 @@ Reply **inside the job's thread**:
 
 ## 6. Scheduling
 - **Cloud** (computer can be off): in Claude Code run `/schedule` and create two routines on your copy of this repo:
-  - daily at your `search.schedule` time: *"Run A from CLAUDE.md"*
-  - every 2–3 hours during the day: *"Run B from CLAUDE.md"*
+  - daily at `schedule.daily_scan` (default **08:00**): *"Run A from CLAUDE.md"*
+  - every `schedule.reply_check_every_hours` hours within `schedule.reply_check_window` (default **every 2 h, 09:00–21:00**): *"Run B from CLAUDE.md"*
 
   Give the routines the Google Drive / Docs / Sheets and Slack connectors, and set two secrets / environment variables:
   `JOB_HUNT_CONFIG_DOC_ID` (your config doc ID) and `SLACK_WEBHOOK_URL` (the bot webhook).
-- **Local** (computer must be awake): ask Claude Code to create scheduled tasks for Run A and Run B.
+- **Local** (computer on, Claude app open; a missed run happens when the app next opens): ask Claude Code to
+  *"create scheduled tasks for Run A and Run B using my schedule"*.
+
+The setup (Run 0) proposes 08:00 for the scan and every 2 hours for replies. Change them any time in the config doc's
+`schedule` section, then ask Claude to update the schedules.
 
 ## 7. Troubleshooting
 | Problem | Fix |
