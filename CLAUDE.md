@@ -6,9 +6,24 @@ user's Google Drive and is reached through one pointer:
 - `config_doc_id` from `job-hunt.local.yaml` (git-ignored), or the env var `JOB_HUNT_CONFIG_DOC_ID` in cloud runs.
 
 **Start of every run:** read that Google Doc (Drive `download_file_content`, export `text/plain`), parse it as YAML
-(strip a leading BOM). It has `profile`, `search`, `exclusions`, `slack`, `google`, `tracker`. All IDs below come from it.
-Also read the master CV (`google.cv_master_doc`), the message templates (`google.message_templates_doc`) and, if set,
-`google.cv_extra_material_doc`.
+(strip a leading BOM). It has `profile`, `search`, `schedule`, `exclusions`, `referrals`, `slack`, `google`, `tracker`.
+All IDs below come from it. Load other files **only when the step needs them** (see "Token budget").
+
+## Token budget (runs are frequent, so keep them lean)
+- **Load lazily.** Master CV: only for scoring (Run A) or tailoring/kit (`apply`). Templates: only when drafting a
+  referral. Extra material: only when tailoring. Connections: only when matching companies (Run A).
+- **Read narrow ranges, not whole sheets.** Pipeline: read the `job_id` and `link` columns to find rows, then read or
+  write just that row. Tracker: read only `key_column` to find the next free row. Never read the archive doc; append
+  with `endOfSegmentLocation`.
+- **Slack:** read the channel with `oldest` = last check, and read a thread only when it has a new user reply.
+- **Job posts:** reuse `post_text` from the Pipeline instead of refetching. In Run A, filter on the search-card title,
+  company and location first; fetch full posts only for survivors (at most ~2× `daily_cap`).
+- **Tailoring:** skip it when match ≥ 8/10 and nothing important is missing. Edit with a few `replaceAllText` calls and
+  read the copy back once, as plain text (`read_file_content`), never as the full JSON structure (`read_doc`).
+- **Application kit:** short. Standard answers + at most 4 screening drafts + link + warnings. No cover letter unless
+  the post asks for one.
+- **Don't re-read** files you already have in this run, and don't echo large texts back into Slack.
+- Scheduled runs should use a mid-size model (e.g. Sonnet). Interactive setup can use a larger one.
 
 **Never write personal data into this repo** (no names, IDs, job posts, pipeline state, CVs). State lives in Drive.
 The user sends LinkedIn messages and submits applications **themselves**. You never send LinkedIn messages, never
@@ -47,9 +62,12 @@ create yourself. Go step by step, and confirm each step before moving on.
 9. **Test run:** Run A capped at 3 jobs, then ask the user to reply `apply` on one, then Run B.
 10. **Schedule**, only after the user is happy with the test. Propose defaults and let the user change them:
     - daily scan (Run A): **08:00** every day, in their timezone;
-    - Slack reply check (Run B): **every 2 hours between 09:00 and 21:00**.
-    Ask "Run the daily scan at 08:00 and check your Slack replies every 2 hours (09:00–21:00), or other times?",
-    save the answer in the config doc's `schedule` section, then create the schedules (README §6).
+    - Slack reply check (Run B): **every hour between 09:00 and 21:00**.
+    Ask "Run the daily scan at 08:00 and check your Slack replies every hour (09:00–21:00), or other times?"
+    Tell them: **1 hour is the minimum** for cloud runs (which work with the computer off); more often (e.g. every
+    30 min) is only possible as a local scheduled task, with the computer on and the Claude app open.
+    Save the answer in the config doc's `schedule` section, then set up scheduling as in README §6. Cloud is the
+    default: walk them through creating the cloud environment and its variables exactly as README §6.1 describes.
 
 ## Where things live (all in the user's Drive)
 | What | Where |

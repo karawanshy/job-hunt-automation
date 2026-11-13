@@ -46,7 +46,7 @@ search:
 schedule:
   timezone: Asia/Jerusalem
   daily_scan: "08:00"                  # Run A time (default 08:00)
-  reply_check_every_hours: 2           # Run B frequency (default every 2 hours)
+  reply_check_every_hours: 1           # Run B frequency (default hourly; 1 hour is the minimum for cloud runs)
   reply_check_window: ["09:00", "21:00"]  # only check replies between these times
 
 exclusions:
