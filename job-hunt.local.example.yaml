@@ -1,0 +1,3 @@
+# Copy to job-hunt.local.yaml (git-ignored) and fill in.
+# This is the ONLY link between the public repo and your private Drive.
+config_doc_id: <Google Doc ID of your "Job Hunt Config" doc>

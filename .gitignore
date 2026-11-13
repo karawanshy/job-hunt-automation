@@ -1,0 +1,7 @@
+.DS_Store
+*.tmp
+# Your private pointer to the Drive config doc. Never commit.
+job-hunt.local.yaml
+# Never commit secrets or personal data
+*.webhook
+.env

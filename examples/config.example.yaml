@@ -1,0 +1,85 @@
+# Job Hunt Config: copy this whole text into a Google Doc named "Job Hunt Config" in your Drive
+# (Drive → New → Google Docs → paste). Keep indentation. All personal data lives there, never in the repo.
+
+profile:
+  first_name: Jane
+  last_name: Doe
+  display_name: Jane Doe
+  email: jane@example.com
+  phone: "+972-50-000-0000"
+  city: Tel Aviv
+  linkedin: https://www.linkedin.com/in/your-handle/
+  github: https://github.com/your-handle
+  portfolio: https://example.com
+  education:
+    degree: B.Sc. Computer Science
+    university: Your University
+    graduation_year: 2023
+    average: 85
+  languages: {English: fluent, Hebrew: fluent}
+  experience_years: 1.5
+  current_employer: CurrentCo          # automatically excluded
+  salary_expectation: "XX,000-YY,000 ILS gross/month"
+  notice_period: 1 month
+  work_mode_preference: [hybrid, office, remote]
+  message_voice: "match the templates (gendered forms in Hebrew/Arabic as written)"
+
+search:
+  country: Israel
+  roles:                                # priority 1 is shown first
+    - {priority: 1, family: infrastructure, titles: [Infrastructure Engineer, Platform Engineer, Distributed Systems Engineer]}
+    - {priority: 2, family: backend, titles: [Backend Engineer, Backend Developer, Python Developer]}
+    - {priority: 3, family: fullstack, titles: [Fullstack Engineer, Full Stack Developer]}
+  hebrew_keywords: ["מפתח/ת Backend", "מהנדס/ת תוכנה"]
+  exclude_titles_containing: [DevOps, SRE, Machine Learning, Senior, Staff, Principal, Lead, Manager, Intern]
+  experience:
+    accept_required_years_max: 3        # "3+" is shown as a stretch
+    reject_if_min_years_at_least: 4
+  locations:
+    base: [Tel Aviv]
+    allowed_cities: [Tel Aviv, Ramat Gan, Herzliya, Petah Tikva, Haifa]
+    conditional: {Jerusalem: hybrid_or_remote_only}
+    excluded_cities: [Eilat]
+    always_allow: [remote]
+  daily_cap: 10
+  schedule: "08:00 Asia/Jerusalem"
+
+exclusions:
+  companies: [CurrentCo, CompetitorA, CompetitorB]
+  ask_before_including: []              # flagged in Slack instead of dropped
+  rules:
+    - "Exclude companies whose main business is <something you don't want>."
+  posting_text_filters: ["security clearance"]   # drop any post containing these
+
+referrals:
+  tags: [colleague, other]              # your own grouping of connections
+  prefer_tags: [colleague, other]       # who to ask first when several work there
+  language_by_tag: {colleague: English, other: English}
+
+slack:
+  channel: "#job-hunt"
+  channel_id: C0XXXXXXX                 # channel → name → About → Channel ID
+
+google:
+  drive_folder: <Job Hunt folder ID>
+  config_folder: <Job Hunt/Config folder ID>
+  pipeline_sheet: <"Job Hunt - Pipeline" sheet ID>
+  job_posts_doc: <"Job Posts Archive" doc ID>
+  message_templates_doc: <templates doc ID>
+  cv_master_doc: <master CV Google Doc ID>     # never edited
+  cv_extra_material_doc: <doc ID>               # optional true lines for tailoring
+  tailored_cv_folder: <"Tailored CVs" folder ID>
+  tailored_cv_naming: "Jane Doe - CV - <Company> - <Title>"
+
+tracker:                                # your application tracker (only applied jobs)
+  sheet: <spreadsheet ID>
+  tab: Sheet1
+  my_columns: "A:Q"                     # never written outside these columns (handy for shared sheets)
+  key_column: B                         # first empty cell here = next free row
+  columns: [owner_marker, Company, Role Title, Location, Work Model, Salary Range, Date Applied, Status, Referral, Contact, Last Update, Notes, Link, Date Found, Applicants, Match, Follow-up Due]
+  dropdowns:                            # exact values allowed by your sheet's data validation
+    Work Model: [Hybrid, On-Site, Remote]
+    Status: [Applied, OA, Recruiter Screen, Technical Interview, Manager Interview, Final Round, Offer, Rejected, Ghosted]
+    Referral: ["Yes", "No"]
+  date_format: MM/DD/YYYY
+  follow_up_days_after_applied: 7
