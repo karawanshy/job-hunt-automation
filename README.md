@@ -38,12 +38,20 @@ Drive. The repo only stores the ID of one config doc, in a git-ignored file.
 |---|---|
 | [Claude](https://claude.ai) with **Claude Code** (desktop app or CLI) | Runs the agent |
 | Google account + Claude connectors **Google Drive**, **Google Docs**, **Google Sheets** | Your private config, CV, tracker |
-| Slack workspace + Claude connector **Slack** | Where jobs arrive and you reply |
+| A **personal** Slack workspace (free) + Claude connector **Slack** | Where jobs arrive and you reply. See below |
 | GitHub account | To clone; also needed for cloud scheduling |
 | Your CV (PDF, Word or Google Doc) | Matching and tailoring |
 | *(optional)* LinkedIn data export | Referral suggestions |
 
+**Use your own Slack workspace, not your employer's or your university's.** Your job hunt stays private, and you
+need to be allowed to add a custom app (the bot), which work workspaces usually block. No personal workspace yet?
+**Create one first** (free, about 2 minutes): go to <https://slack.com/get-started#/createnew>, sign in with your
+personal email, and name it anything (e.g. "Job Hunt"). Skip inviting people. Install the Slack app on your phone and
+sign in to the new workspace too, so you get the notifications.
+
 Enable the connectors in Claude: **Settings → Connectors** → Google Drive, Google Docs, Google Sheets, Slack → Connect.
+When you connect Slack, **pick your personal workspace**. If Slack is already connected to a work workspace,
+disconnect it and connect again with the personal one.
 
 ## 2. Quick start: let Claude set you up
 ```bash
@@ -123,7 +131,8 @@ Put your config doc ID in it. The file is git-ignored, so it's never committed.
 ### 3.5 Slack channel + bot (so you get notifications)
 The Slack connector posts as **you**, and Slack never notifies you about your own messages. So the agent posts through
 a tiny bot instead.
-1. Create a private channel, e.g. `#job-hunt`. Open it → click the name → **About** → copy the **Channel ID** at the
+1. In your **personal** workspace (see §1; create one first if you don't have it), create a private channel, e.g.
+   `#job-hunt`. Open it → click the name → **About** → copy the **Channel ID** at the
    bottom into `slack.channel_id`.
 2. Go to <https://api.slack.com/apps> → **Create New App** → **Paste manifest** → pick your workspace → paste:
    ```yaml

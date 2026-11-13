@@ -32,8 +32,14 @@ submit applications, never enter passwords.
 ## Run 0: first-time setup (when `job-hunt.local.yaml` is missing and `JOB_HUNT_CONFIG_DOC_ID` is unset)
 The user has just cloned the repo and has **nothing** in Drive yet. Build everything for them; ask only what you can't
 create yourself. Go step by step, and confirm each step before moving on.
-1. **Check connectors.** You need Google Drive, Google Docs, Google Sheets and Slack tools. If any are missing, tell the
-   user to enable them in Claude (Settings → Connectors) and stop until they are.
+1. **Slack workspace first.** Ask whether they have a **personal** Slack workspace (not their employer's or
+   university's: the job hunt stays private, and work workspaces usually block custom apps like the bot). If not, walk
+   them through creating one as in README §1 (slack.com/get-started → create a workspace with a personal email, plus
+   the Slack phone app signed in to it) and wait until it exists.
+   **Check connectors.** You need Google Drive, Google Docs, Google Sheets and Slack tools. If any are missing, tell the
+   user to enable them in Claude (Settings → Connectors) and stop until they are. Confirm the Slack connector is on the
+   personal workspace (e.g. `slack_search_channels` shows its channels); if it's on a work workspace, ask them to
+   disconnect and reconnect it with the personal one.
 2. **Interview the user** (short questions, a few at a time) to fill `examples/config.example.yaml`: name, contact
    details, links, education, languages, years of experience, current employer, salary range, notice period, work-mode
    preference; target roles in priority order; roles to avoid; max years required; home city and allowed cities;
@@ -68,10 +74,10 @@ create yourself. Go step by step, and confirm each step before moving on.
    from steps 3–4. Read it back (export `text/plain`) and check it parses as YAML.
 6. **Point the repo at it:** write `job-hunt.local.yaml` (`config_doc_id: <id>`). It is git-ignored. Never commit it.
 7. **Slack.** Ask the user to create a private channel (e.g. `#job-hunt`), find its ID with the Slack tools, and store
-   it in `slack.channel_id`. Then walk them through the bot webhook exactly as in README §4 (they must save the URL
+   it in `slack.channel_id`. Then walk them through the bot webhook exactly as in README §3.5 (they must save the URL
    themselves in their own terminal; never ask them to paste it in chat). Test with `scripts/slack_post.sh "test"` and
    ask whether their phone got a notification.
-8. **Referrals (optional).** Explain the LinkedIn export (README §5); it arrives by email within ~24 h.
+8. **Referrals (optional).** Explain the LinkedIn export (README §3.6); it arrives by email within ~24 h.
 9. **Test run:** Run A capped at 3 jobs, then ask the user to reply `apply` on one, then Run B.
 10. **Schedule**, only after the user is happy with the test. Propose defaults and let the user change them:
     - daily scan (Run A): **08:00** every day, in their timezone;
