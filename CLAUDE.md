@@ -54,9 +54,16 @@ create yourself. Go step by step, and confirm each step before moving on.
        `tracker.date_format`.
      Read row 1 back and confirm the dropdowns exist before moving on. If a batchUpdate is refused, tell the user
      which part to add by hand (Data → Data validation).
-4. **CV.** Ask the user to upload their CV to `Job Hunt`. If it's a PDF or .docx, ask them to open it and use
-   File → Save as Google Docs (one click; the Drive tools can't convert reliably), then use that Google Doc as
-   `cv_master_doc`. Read it and confirm the text matches their real CV.
+4. **CV** (right after the folders exist). The Drive tools can't convert files reliably, so the user does it. Give
+   them the `Job Hunt` folder link and these steps, then wait until they say it's done:
+   1. Open the `Job Hunt` folder link → **New → File upload** (or drag the file in) → pick your CV. A **.docx** keeps
+      its layout best; a PDF works too.
+   2. Double-click the uploaded CV → at the top, **Open with → Google Docs**.
+   3. If it's a .docx: in the doc, **File → Save as Google Docs**. A PDF already opens as a new Google Doc in step 2.
+   4. Check the new Google Doc is in `Job Hunt` (if not: **File → Move** → `Job Hunt`), and the text and layout look
+      right. Delete or keep the original file, either is fine.
+   Then find the Google Doc in the folder (Drive search, mimeType Google Doc), use it as `cv_master_doc`, read it and
+   confirm with the user that the text matches their real CV.
 5. **Write the config doc** `Config/Job Hunt Config` (Google Doc, plain YAML) with the interview answers and every ID
    from steps 3–4. Read it back (export `text/plain`) and check it parses as YAML.
 6. **Point the repo at it:** write `job-hunt.local.yaml` (`config_doc_id: <id>`). It is git-ignored. Never commit it.

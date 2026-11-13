@@ -57,7 +57,8 @@ Open the folder in Claude Code and say:
 Claude follows "Run 0" in `CLAUDE.md`. It interviews you, creates the whole Drive structure, writes your config, helps
 you create the Slack bot, and does a test run. Plan for about 20–30 minutes. Things only you can do (they're explained
 when you reach them):
-- click **File → Save as Google Docs** on your CV;
+- add your CV to the `Job Hunt` folder as a Google Doc: upload it, double-click it, **Open with → Google Docs**,
+  then (for a .docx) **File → Save as Google Docs**;
 - create the Slack bot and save its webhook URL in your own terminal (§3.5);
 - request the LinkedIn export (§3.6).
 
@@ -88,7 +89,7 @@ How to fill each one:
 
 | Item | What to put in it |
 |---|---|
-| **Master CV** | Upload your CV, open it, **File → Save as Google Docs**. Use the Google Doc (not the PDF or .docx) |
+| **Master CV** | In `Job Hunt`: **New → File upload** your CV (.docx keeps the layout best; PDF works) → double-click it → **Open with → Google Docs** → for a .docx also **File → Save as Google Docs**. Check the Google Doc landed in `Job Hunt` (else **File → Move**). Use the Google Doc, not the PDF or .docx |
 | **Referral Request Template** | Your referral message per language, `[Name]` where the name goes. Example: [`examples/templates.example.md`](examples/templates.example.md) |
 | **CV Extra Material** | *Optional.* True achievements that aren't on your CV; tailoring may pull them in when a job fits |
 | **Job Hunt - Pipeline** | Row 1 headers from [`examples/pipeline_columns.md`](examples/pipeline_columns.md) (A–T). Nothing else |
@@ -254,12 +255,17 @@ Rough estimates with the defaults (daily scan, hourly reply check 09:00–21:00,
 Anthropic doesn't publish the exact plan limits, so treat these as ballpark figures and check your real numbers at
 <https://claude.ai/settings/usage> after a few days:
 
-| Plan | Any 5-hour window | Normal week | Busy week (many `apply`, CV tailoring) |
-|---|---|---|---|
-| Pro | ~5–15% | ~10–25% | ~25–40% |
-| Max 5x | ~1–3% | ~2–5% | ~5–8% |
-| Max 20x | ~0.3–0.8% | ~0.5–1.5% | ~1.5–2% |
-| API billing | | ≈ $1.50–2.80 a day, ≈ $45–85 a month | |
+Percentages are the share of that plan's limit the automation uses. The rest stays free for your own Claude use.
+
+| Plan | Weekly limit used, per day | **Weekly limit used, whole week** | Whole week, busy (many `apply`, CV tailoring) | 5-hour limit used, any 5-hour window |
+|---|---|---|---|---|
+| Pro | ~1.5–3.5% | **~10–25%** | ~25–40% | ~5–15% |
+| Max 5x | ~0.3–0.7% | **~2–5%** | ~5–8% | ~1–3% |
+| Max 20x | ~0.1–0.2% | **~0.5–1.5%** | ~1.5–2% | ~0.3–0.8% |
+| API billing | ≈ $1.50–2.80 | **≈ $10–20** | ≈ $20–30 | (≈ $45–85 a month) |
+
+Roughly two thirds of the usage is the hourly Slack reply checks. Each check starts a fresh cloud session that loads
+the instructions and tools before reading anything, even when there's nothing new. The daily scan is the rest.
 
 Where the usage goes:
 
